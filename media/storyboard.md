@@ -8,4 +8,4 @@
 | 4 | Full companion-site screenshot | Default launch page vs. full site; top-position Slides link |
 | 5 | Launch-site screenshot | QA, public-copy cleanup, and sharing |
 
-Voice: generated macOS `Karen` (`en_AU`) at a conversational pace. Captions are burned into the MP4 and also shipped as a separate SRT. The video is an illustrative walkthrough of the shipped code, not a recording of a user's private deck.
+Voice: macOS `Karen` (`en_AU`), with conversational phrasing, a measured pace, and deliberate sentence pauses. Captions are burned into the MP4 and also shipped as a separate SRT. The video is an illustrative walkthrough of the shipped code, not a recording of a user's private deck.

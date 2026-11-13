@@ -66,7 +66,7 @@ The output is static and can be deployed with GitHub Pages, any static web host,
 
 ## Project demo video
 
-Watch the [approximately 90-second narrated walkthrough](media/bento-deck-studio-demo.mp4) with burned-in captions, or download the [separate SRT caption file](media/bento-deck-studio-demo.srt). The voice is generated locally with macOS `say` using its Australian-English Karen voice. The editable narration script, storyboard, and source artwork are kept alongside the rendered video in `media/`.
+Watch the [approximately 90-second narrated walkthrough](media/bento-deck-studio-demo.mp4) with burned-in captions, or download the [separate SRT caption file](media/bento-deck-studio-demo.srt). The voice is generated locally with macOS `say` using its Australian-English Karen voice, conversational phrasing, and deliberate sentence pauses. The editable narration script, storyboard, and source artwork are kept alongside the rendered video in `media/`.
 
 ## Documentation visuals
 

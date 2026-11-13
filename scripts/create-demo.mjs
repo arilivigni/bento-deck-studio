@@ -12,6 +12,8 @@ const outPath = path.join(root, 'media/bento-deck-studio-demo.mp4');
 const captionsPath = path.join(root, 'media/bento-deck-studio-demo.srt');
 const CAPTION_WIDTH = 1800;
 const CAPTION_HEIGHT = 156;
+const NARRATION_PAUSE_MS = 320;
+const NARRATION_RATE = 118;
 
 function run(command, args) {
   return new Promise((resolve, reject) => {
@@ -39,6 +41,10 @@ function timestamp(seconds) {
 
 function sentences(text) {
   return text.match(/[^.!?]+[.!?]+/g)?.map((sentence) => sentence.trim()) ?? [text];
+}
+
+function addNarrationPauses(text) {
+  return text.replace(/([.!?])(?=\s+\S)/g, `$1[[slnc ${NARRATION_PAUSE_MS}]]`);
 }
 
 function escapeXml(text) {
@@ -89,7 +95,7 @@ async function main() {
     const segments = [];
     for (const [index, scene] of scenes.entries()) {
       const audioPath = path.join(tempDir, `voice-${index + 1}.aiff`);
-      await run('say', ['-v', 'Karen', '-r', '118', '-o', audioPath, scene.text]);
+      await run('say', ['-v', 'Karen', '-r', String(NARRATION_RATE), '-o', audioPath, addNarrationPauses(scene.text)]);
       const duration = Number(await run('ffprobe', [
         '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', audioPath
       ]));
@@ -108,9 +114,12 @@ async function main() {
       const lines = sentences(segment.text);
       const weights = lines.map((line) => line.split(/\s+/).length);
       const totalWords = weights.reduce((sum, weight) => sum + weight, 0);
+      const pauseCount = Math.max(0, lines.length - 1);
+      const spokenDuration = segment.duration - pauseCount * NARRATION_PAUSE_MS / 1000;
       let segmentCursor = cursor;
       for (const [index, line] of lines.entries()) {
-        const cueDuration = segment.duration * weights[index] / totalWords;
+        const pauseDuration = index < lines.length - 1 ? NARRATION_PAUSE_MS / 1000 : 0;
+        const cueDuration = spokenDuration * weights[index] / totalWords + pauseDuration;
         const imageSvg = path.join(tempDir, `caption-${captions.length + 1}.svg`);
         const imagePng = path.join(tempDir, `caption-${captions.length + 1}.png`);
         await writeFile(imageSvg, captionSvg(line));

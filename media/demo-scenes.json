@@ -1,22 +1,22 @@
 [
   {
     "image": "../docs/images/workflow.png",
-    "text": "Start with a PowerPoint theme you already trust. Bento-deck-studio reads its colors, type, slide size, layouts, and candidate image assets without changing the source. Review the extracted theme tokens before you build, and let them shape the story."
+    "text": "Let's start with a PowerPoint theme you already trust. Bento-deck-studio reads the colors, type, slide size, layouts, and candidate images—without changing your source file. Review those theme tokens first; then use them as a visual starting point for the story."
   },
   {
     "image": "../docs/images/deck-editor.png",
-    "text": "Next, give Copilot a topic, outline, or Markdown script. The authoring flow turns it into native bento slides, not flattened images. Each slide gets one message, clear hierarchy, and an editable layout you can revise without losing the message."
+    "text": "Now, bring a topic, an outline, or a Markdown script. The authoring flow turns it into native Bento slides—not flattened images. Each slide lands one clear message, with an easy-to-follow hierarchy and a layout you can revisit as the story evolves."
   },
   {
     "image": "../docs/images/deck-editor.png",
-    "text": "Before writing the file, the deck builder checks Bento's signed release manifest and verifies the shell hash. A supplied image can become the favicon, or the site can generate a theme-colored monogram. The checks run before the deck is written, so release integrity comes first."
+    "text": "Before the deck is written, the builder verifies Bento's signed release manifest and checks the shell hash. That way, it starts from a trusted shell. Add your own image as a favicon, or let the site make a monogram from your theme colors."
   },
   {
     "image": "../docs/images/full-site.png",
-    "text": "By default, the result is a simple launch page with the presentation one click away. Choose the full companion site for a menu and story sections. Slides is the first menu item and opens a read-only deck in a new tab, while the deck stays editable and the site remains easy to host."
+    "text": "Need a quick share? The default is a simple launch page, with the presentation one click away. Want a fuller story? Choose the companion site instead. Slides sits first in the menu and opens a read-only deck in a new tab, keeping the slide content intact and the site easy to host."
   },
   {
     "image": "../docs/images/launch-site.png",
-    "text": "Before sharing, validate the structure, review every slide in a browser, and check links and the favicon. The public deck copy removes speaker notes and collaboration credentials. Your theme, your narrative, and a more considered way to present, ready to share after one final review."
+    "text": "Before you share, let's check every slide in the browser, then check the links and favicon. The public deck drops speaker notes and collaboration credentials. And that's it—your theme and your story, ready to present, with the editability intact."
   }
 ]
