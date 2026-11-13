@@ -8,4 +8,4 @@
 | 4 | Full companion-site screenshot | Default launch page vs. full site; top-position Slides link |
 | 5 | Launch-site screenshot | QA, public-copy cleanup, and sharing |
 
-Voice: macOS `Karen` (`en_AU`), with conversational phrasing, a measured pace, and deliberate sentence pauses. Captions are burned into the MP4 and also shipped as a separate SRT. The video is an illustrative walkthrough of the shipped code, not a recording of a user's private deck.
+Voice: the Kokoro-82M neural voice `bf_emma` (speaker 21, British English), synthesized locally sentence by sentence at about 165 words per minute. Short pauses separate sentences, slightly longer ones follow questions and scene changes, and the mix is loudness-normalized to −16 LUFS. Em dashes are spoken as comma pauses, and the product name is read as "Bento Deck Studio". Captions are burned into the MP4 and also shipped as a separate SRT. The video is an illustrative walkthrough of the shipped code, not a recording of a user's private deck.

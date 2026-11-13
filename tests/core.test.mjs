@@ -9,7 +9,10 @@ import { buildSite, makeReadOnlyDeck } from '../scripts/site-build.mjs';
 import { createFaviconSvg } from '../scripts/lib/favicon.mjs';
 import { spliceDeck, validateDeckHtml, verifyManifest } from '../scripts/lib/bento.mjs';
 import { readZip } from '../scripts/lib/zip.mjs';
-import { extractTheme, extractThemeAssets } from '../scripts/theme-extract.mjs';
+import { contentRegion, extractTheme, extractThemeAssets } from '../scripts/theme-extract.mjs';
+import { applyOfficeTypography, splitParagraphHtml } from '../scripts/lib/typography.mjs';
+import { existsSync, readFileSync } from 'node:fs';
+import { fontStack, usedFaces } from '../scripts/lib/fonts.mjs';
 
 const crcTable = Uint32Array.from({ length: 256 }, (_, n) => {
   let c = n;
@@ -164,4 +167,62 @@ test('favicon monogram is deterministic and manifest verifier rejects invalid si
   assert.equal(first, createFaviconSvg('Bento deck', '#5EEC83', '#101418'));
   assert.match(first, /aria-label="Bento deck"/);
   assert.throws(() => verifyManifest({ payload: '{}', sig: Buffer.alloc(64).toString('base64') }), /signature verification failed/);
+});
+
+test('content region starts below a divider under the title and stops above the footer', () => {
+  const size = { width: 1280, height: 720 };
+  const layout = {
+    placeholders: [
+      { role: 'title', box: { x: 100, y: 60, w: 1000, h: 120 }, style: { fontSize: 48, align: 'left' } },
+      { role: 'body', box: { x: 100, y: 200, w: 300, h: 40 }, style: { fontSize: 24 } },
+      { role: 'footer', box: { x: 100, y: 660, w: 400, h: 30 }, style: { fontSize: 12 } }
+    ]
+  };
+  const divider = { x: 0, y: 200, w: 1280, h: 2 };
+  const region = contentRegion(layout, [divider], size);
+  assert.equal(region.box.y, Math.round((202 + 720 * 0.04) * 100) / 100);
+  assert.ok(region.box.y + region.box.h <= 660);
+  assert.equal(region.style.fontSize, 24);
+  assert.equal(contentRegion(layout, [{ x: 400, y: 150, w: 300, h: 300 }], size), null, 'an obstacle across the top rules the layout out');
+});
+
+const monaSans = '/Library/Fonts/MonaSans-Regular.ttf';
+test('wrapped spaced paragraphs split into grouped boxes and overflowing text grows its box', { skip: !existsSync(monaSans) && 'Mona Sans is not installed' }, () => {
+  assert.deepEqual(splitParagraphHtml('<div>One</div><div>Two <b>bold</b></div>'), ['<div>One</div>', '<div>Two <b>bold</b></div>']);
+  assert.equal(splitParagraphHtml('<ul><li>One</li></ul>'), null);
+  assert.equal(splitParagraphHtml('Loose <div>text</div>'), null);
+
+  const long = 'A paragraph long enough that it certainly wraps across this narrow text box at least once.';
+  const body = { id: 's1-body', morphId: 'ph-body', type: 'text', x: 100, y: 100, w: 400, h: 400, fontSize: 20, fontFamily: 'Mona Sans', lineHeight: 1.2, valign: 'top', html: `<div>${long}</div><div>Short</div>` };
+  const subtitle = { id: 's1-sub', type: 'text', x: 100, y: 600, w: 200, h: 24, fontSize: 20, fontFamily: 'Mona Sans', lineHeight: 1.2, valign: 'bottom', html: long };
+  const doc = {
+    fonts: [{ family: 'Mona Sans', weight: '400', style: 'normal', asset: 'mona' }],
+    assets: { mona: `data:font/ttf;base64,${readFileSync(monaSans).toString('base64')}` },
+    slides: [{ id: 's1', elements: [body, subtitle] }],
+    layouts: []
+  };
+  const hints = new Map([[body, { lineHeight: 1.2, spaceBefore: 12 }], [subtitle, { lineHeight: 1.2, spaceBefore: 0 }]]);
+  const report = applyOfficeTypography(doc, hints);
+  assert.equal(report.split, 1);
+  const [first, second] = doc.slides[0].elements.filter((element) => element.groupId);
+  assert.equal(second.id, 's1-body-p2');
+  assert.equal(second.morphId, 'ph-body-p2');
+  assert.equal(first.groupId, second.groupId);
+  const firstLines = Math.round((first.h - 1) / (1.2 * 20));
+  assert.ok(firstLines >= 2);
+  assert.ok(Math.abs(second.y - first.y - (firstLines * 1.2 * 20 + 12)) < 0.02, 'second paragraph sits one space-before below the first');
+
+  assert.equal(report.grown, 1);
+  assert.ok(subtitle.h > 24);
+  assert.ok(subtitle.y < 590 && Math.abs(subtitle.y + subtitle.h - 624) < 6, 'bottom-anchored text grows upwards');
+});
+
+test('CSS font stacks pass through and generic families are never embedded', () => {
+  assert.equal(fontStack('system-ui, sans-serif'), 'system-ui, sans-serif');
+  assert.match(fontStack('Calibri'), /^Calibri, Carlito, /);
+  const doc = {
+    theme: { fontFamily: 'system-ui, sans-serif', headingFamily: fontStack('ui-sans-serif, sans-serif') },
+    slides: [{ elements: [{ type: 'text', html: '<b>Hi</b>', fontFamily: 'sans-serif' }, { type: 'text', html: 'x', fontFamily: fontStack('Mona Sans') }] }]
+  };
+  assert.deepEqual(usedFaces(doc).map((face) => `${face.family} ${face.weight}`), ['Mona Sans 400']);
 });

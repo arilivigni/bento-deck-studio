@@ -1,67 +1,67 @@
 1
-00:00:00,000 --> 00:00:04,421
+00:00:00,000 --> 00:00:03,071
 Let's start with a PowerPoint theme you already trust.
 
 2
-00:00:04,421 --> 00:00:11,576
+00:00:03,223 --> 00:00:11,419
 Bento-deck-studio reads the colors, type, slide size, layouts, and candidate images—without changing your source file.
 
 3
-00:00:11,576 --> 00:00:18,866
+00:00:11,571 --> 00:00:17,155
 Review those theme tokens first; then use them as a visual starting point for the story.
 
 4
-00:00:19,216 --> 00:00:23,688
+00:00:17,415 --> 00:00:21,635
 Now, bring a topic, an outline, or a Markdown script.
 
 5
-00:00:23,688 --> 00:00:28,574
+00:00:21,787 --> 00:00:26,858
 The authoring flow turns it into native Bento slides—not flattened images.
 
 6
-00:00:28,574 --> 00:00:36,877
+00:00:27,010 --> 00:00:34,859
 Each slide lands one clear message, with an easy-to-follow hierarchy and a layout you can revisit as the story evolves.
 
 7
-00:00:37,227 --> 00:00:43,424
+00:00:35,119 --> 00:00:40,870
 Before the deck is written, the builder verifies Bento's signed release manifest and checks the shell hash.
 
 8
-00:00:43,424 --> 00:00:46,510
+00:00:41,022 --> 00:00:43,805
 That way, it starts from a trusted shell.
 
 9
-00:00:46,510 --> 00:00:52,733
+00:00:43,957 --> 00:00:49,759
 Add your own image as a favicon, or let the site make a monogram from your theme colors.
 
 10
-00:00:53,083 --> 00:00:54,815
+00:00:50,019 --> 00:00:51,801
 Need a quick share?
 
 11
-00:00:54,815 --> 00:00:59,727
+00:00:52,001 --> 00:00:57,110
 The default is a simple launch page, with the presentation one click away.
 
 12
-00:00:59,727 --> 00:01:01,459
+00:00:57,262 --> 00:00:59,246
 Want a fuller story?
 
 13
-00:01:01,459 --> 00:01:03,545
+00:00:59,446 --> 00:01:02,003
 Choose the companion site instead.
 
 14
-00:01:03,545 --> 00:01:12,727
+00:01:02,155 --> 00:01:10,359
 Slides sits first in the menu and opens a read-only deck in a new tab, keeping the slide content intact and the site easy to host.
 
 15
-00:01:13,077 --> 00:01:19,811
+00:01:10,619 --> 00:01:16,207
 Before you share, let's check every slide in the browser, then check the links and favicon.
 
 16
-00:01:19,811 --> 00:01:23,739
+00:01:16,359 --> 00:01:19,824
 The public deck drops speaker notes and collaboration credentials.
 
 17
-00:01:23,739 --> 00:01:29,352
+00:01:19,976 --> 00:01:24,917
 And that's it—your theme and your story, ready to present, with the editability intact.

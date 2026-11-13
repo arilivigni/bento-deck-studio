@@ -15,4 +15,4 @@ Build from the reviewed theme JSON:
 node scripts/deck-build.mjs --theme theme.json --content outline.md --out dist/deck.bento.html
 ```
 
-Use theme fonts only when available and licensed; otherwise keep a system stack in the document. Make slide IDs and element IDs deterministic, maintain accessible contrast, and leave reasonable margins.
+Let the builder handle the theme's fonts: it embeds licence-permitted files and otherwise keeps a metric-compatible or system stack. Use `<!-- layout: section -->` (or another role or layout name) under a heading when a slide should use a specific source layout. Make slide IDs and element IDs deterministic, maintain accessible contrast, and leave reasonable margins.

@@ -24,9 +24,9 @@ Ask before replacing an existing output, using a proprietary font asset, or enab
 ## Required output flow
 
 1. Identify the source template/deck and source content; confirm output path and site tier.
-2. Extract palette, fonts, slide size, layouts, and candidate image assets to a reviewable theme JSON.
-3. Generate a compact, editable bento deck with speaker notes when supplied.
+2. Extract palette, fonts, slide size, master variants, layouts, and candidate image assets to a reviewable theme JSON. Confirm the variant (for example dark or light) when the template has several.
+3. Generate a compact, editable bento deck on the source's own layouts, matching its colors, typography, and proportions, with speaker notes when supplied.
 4. Verify the signed Bento shell manifest and SHA-256 before building.
 5. Add a supplied favicon or generated theme-colored monogram. Do not silently use a logo asset whose identity is unclear.
 6. Generate the selected site tier, validate the embedded deck, and render every slide for visual review.
-7. Summarize produced files, theme choices, skipped assets/fonts, and any QA findings.
+7. Summarize produced files, theme choices, skipped assets, fonts that could not be embedded, and any QA findings.
