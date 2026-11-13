@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { deflateRawSync } from 'node:zlib';
@@ -13,6 +13,9 @@ import { contentRegion, extractTheme, extractThemeAssets } from '../scripts/them
 import { applyOfficeTypography, splitParagraphHtml } from '../scripts/lib/typography.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import { fontStack, usedFaces } from '../scripts/lib/fonts.mjs';
+import { renderMarkdown } from '../scripts/lib/markdown.mjs';
+import { buildWebsite, checkLinks, parseChangelog } from '../scripts/website-build.mjs';
+import { bumpVersion, checkRelease, releaseNotes } from '../scripts/release.mjs';
 
 const crcTable = Uint32Array.from({ length: 256 }, (_, n) => {
   let c = n;
@@ -225,4 +228,96 @@ test('CSS font stacks pass through and generic families are never embedded', () 
     slides: [{ elements: [{ type: 'text', html: '<b>Hi</b>', fontFamily: 'sans-serif' }, { type: 'text', html: 'x', fontFamily: fontStack('Mona Sans') }] }]
   };
   assert.deepEqual(usedFaces(doc).map((face) => `${face.family} ${face.weight}`), ['Mona Sans 400']);
+});
+
+test('website Markdown escapes HTML, drops unsafe URLs, and renders tables, task lists, and reference links', () => {
+  const { html, headings } = renderMarkdown([
+    '## Install <now>',
+    '',
+    'Run <script>alert(1)</script> or [click](javascript:alert(1)) and read the [guide][docs].',
+    '',
+    '| Name | Size |',
+    '| --- | ---: |',
+    '| deck | 2 |',
+    '',
+    '- [x] done',
+    '- [ ] todo',
+    '',
+    '[docs]: https://example.com/docs'
+  ].join('\n'));
+  assert.doesNotMatch(html, /<script|javascript:/i);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.match(html, /<a href="https:\/\/example\.com\/docs" rel="noopener">guide<\/a>/);
+  assert.doesNotMatch(html, /\[docs\]:/);
+  assert.match(html, /<th class="align-right">Size<\/th>.*<td class="align-right">2<\/td>/);
+  assert.match(html, /<ul class="tasks"><li class="task"><input type="checkbox" disabled checked aria-hidden="true"> done<\/li><li class="task"><input type="checkbox" disabled aria-hidden="true"> todo/);
+  assert.deepEqual(headings, [{ level: 2, id: 'install-now', text: 'Install &lt;now&gt;' }]);
+});
+
+test('project website puts Slides first, opens it in a new tab, and fails on broken internal links', async (t) => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'bds-website-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const out = path.join(dir, 'site');
+  const result = await buildWebsite({ out, baseUrl: 'https://example.test/bento' });
+  assert.equal(result.baseUrl, 'https://example.test/bento/');
+  assert.ok(result.docs > 0 && result.skills === 6);
+  const index = await readFile(path.join(out, 'index.html'), 'utf8');
+  const firstNavLink = index.match(/<nav\b[^>]*>[\s\S]*?(<a\b[^>]*>)/)[1];
+  assert.match(firstNavLink, /href="slides\/deck\.bento\.html"/);
+  assert.match(firstNavLink, /target="_blank"/);
+  assert.match(firstNavLink, /rel="noopener"/);
+  assert.match(index, /<link rel="canonical" href="https:\/\/example\.test\/bento\/">/);
+  const deck = await readFile(path.join(out, 'slides/deck.bento.html'), 'utf8');
+  assert.doesNotThrow(() => validateDeckHtml(deck));
+  const notFound = await readFile(path.join(out, '404.html'), 'utf8');
+  assert.doesNotMatch(notFound, /<base\b/);
+  assert.match(notFound, /<a class="skip-link" href="#main">/);
+  assert.match(notFound, /href="\/bento\/assets\/styles\.css"/);
+  assert.match(notFound, /href="\/bento\/docs\/getting-started\.html"/);
+  for (const name of await readdir(path.join(out, 'docs'))) {
+    assert.doesNotMatch(await readFile(path.join(out, 'docs', name), 'utf8'), /&amp;(?:quot|lt|gt|amp);/, `double-escaped text in docs/${name}`);
+  }
+  assert.deepEqual(await checkLinks(out, { basePath: '/bento/' }), []);
+  await writeFile(path.join(out, 'stray.html'), '<a href="docs/missing.html">x</a><a href="index.html#nowhere">y</a><a href="/bento/gone.html">z</a><a href="/elsewhere/">w</a>');
+  assert.deepEqual(await checkLinks(out, { basePath: '/bento/' }), ['stray.html: docs/missing.html', 'stray.html: index.html#nowhere (missing #nowhere)', 'stray.html: /bento/gone.html']);
+  await assert.rejects(buildWebsite({ out }), /Refusing to overwrite/);
+});
+
+test('changelog parsing and release checks keep versions, notes, and tags consistent', async (t) => {
+  const changelog = [
+    '# Changelog',
+    '',
+    '## [Unreleased]',
+    '',
+    '## [1.2.0] - 2026-01-02',
+    '',
+    '### Added',
+    '',
+    '- A thing.',
+    '',
+    '[unreleased]: https://example.test/compare/v1.2.0...HEAD',
+    '[1.2.0]: https://example.test/releases/tag/v1.2.0',
+    ''
+  ].join('\n');
+  assert.deepEqual(parseChangelog(changelog).map(({ version, date, url }) => ({ version, date, url })), [
+    { version: 'Unreleased', date: null, url: 'https://example.test/compare/v1.2.0...HEAD' },
+    { version: '1.2.0', date: '2026-01-02', url: 'https://example.test/releases/tag/v1.2.0' }
+  ]);
+  assert.deepEqual(releaseNotes(changelog, '1.2.0'), { date: '2026-01-02', body: '### Added\n\n- A thing.' });
+  assert.throws(() => releaseNotes(changelog, '9.9.9'), /no section for 9\.9\.9/);
+  assert.throws(() => releaseNotes(changelog.replace(' - 2026-01-02', ''), '1.2.0'), /needs a release date/);
+
+  const root = await mkdtemp(path.join(os.tmpdir(), 'bds-release-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(path.join(root, '.github/plugin'), { recursive: true });
+  await writeFile(path.join(root, 'plugin.json'), JSON.stringify({ name: 'demo', version: '1.1.0' }));
+  await writeFile(path.join(root, '.github/plugin/marketplace.json'), JSON.stringify({ metadata: { version: '1.1.0' }, plugins: [{ name: 'demo', version: '1.1.0' }] }));
+  await writeFile(path.join(root, 'CHANGELOG.md'), changelog);
+  const before = await checkRelease({ root, version: '1.2.0' });
+  assert.equal(before.problems.length, 3);
+  assert.match(before.problems.join('\n'), /plugin\.json version is 1\.1\.0, expected 1\.2\.0/);
+  assert.deepEqual(await bumpVersion({ root, version: '1.2.0' }), { previous: '1.1.0', version: '1.2.0' });
+  assert.deepEqual((await checkRelease({ root, version: '1.2.0' })).problems, []);
+  assert.deepEqual((await checkRelease({ root, version: '1.2.0', tagged: true })).problems, ['Tag v1.2.0 does not exist.']);
+  await assert.rejects(checkRelease({ root, version: 'v1.2' }), /Not a valid semantic version/);
 });

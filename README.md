@@ -2,6 +2,8 @@
 
 Create editable bento slides from a PowerPoint theme, then share them as a deck or a small companion site. This repository packages a GitHub Copilot app + Copilot CLI plugin with one coordinating agent, focused Agent Skills, and dependency-free Node scripts.
 
+**Website:** <https://arilivigni.github.io/bento-deck-studio/> · **Latest release:** [v1.0.0](https://github.com/arilivigni/bento-deck-studio/releases/tag/v1.0.0) · [Changelog](CHANGELOG.md)
+
 ## What it does
 
 - Extracts theme colors, fonts, slide size, every slide master (as a dark or light variant), layout placeholders with their exact geometry and text styles, and candidate image assets from `.pptx` and `.potx` files.
@@ -18,18 +20,31 @@ See the [verified screenshot gallery](docs/screenshots.md) for the generated dec
 
 ## Install
 
-Install the plugin from a local checkout:
+Register the repository as a plugin marketplace, then install the plugin from it:
 
 ```sh
-copilot plugin marketplace add /path/to/bento-deck-studio
+copilot plugin marketplace add arilivigni/bento-deck-studio
 copilot plugin install bento-deck-studio@bento-deck-studio
 ```
 
-Or install the repository plugin directly where supported:
+To pin a release instead of tracking `main`, add the marketplace at its tag (recommended for workshops and teams):
 
 ```sh
-copilot plugin install arilivigni/bento-deck-studio
+copilot plugin marketplace add arilivigni/bento-deck-studio#v1.0.0
+copilot plugin install bento-deck-studio@bento-deck-studio
 ```
+
+For offline installs, download the zip and `SHA256SUMS` from the [GitHub release](https://github.com/arilivigni/bento-deck-studio/releases), verify them, and add the extracted folder as a marketplace:
+
+```sh
+shasum -a 256 -c SHA256SUMS
+gh attestation verify bento-deck-studio-1.0.0.zip --repo arilivigni/bento-deck-studio
+unzip bento-deck-studio-1.0.0.zip
+copilot plugin marketplace add ./bento-deck-studio-1.0.0
+copilot plugin install bento-deck-studio@bento-deck-studio
+```
+
+The CLI loads a local marketplace in place rather than copying it, so keep the extracted folder where it is.
 
 The GitHub Copilot app can discover the repository marketplace and plugin through **Customize**. Choose the `bento-deck-studio` agent or invoke its skills directly.
 
@@ -76,7 +91,7 @@ node scripts/validate.mjs dist/site --site
 
 `launch` is the default one-page site. Add `--tier full` for a multi-section site with the first-position **Slides ↗** menu item. Optionally add `--favicon /path/to/mark.svg` (SVG, PNG, JPEG, or WebP). Generated public deck copies are read-only and have speaker notes and collaboration credentials removed.
 
-The output is static and can be deployed with GitHub Pages, any static web host, or opened locally. To build directly into the Pages workflow directory, choose `--out site`.
+The output is static and can be deployed with GitHub Pages, any static web host, or opened locally. The `site/` folder holds a reviewed example launch site, which the project website publishes under `example/`.
 
 ## Design and safety notes
 
@@ -109,7 +124,30 @@ node --test
 node scripts/validate.mjs .
 ```
 
-The GitHub Actions workflow runs tests, validates plugin metadata, and packages the plugin. A manual Pages deployment workflow is available for a reviewed site in `site/`.
+**Plugin CI** runs the tests, validates the plugin manifests and skills, builds and validates the project website, and validates the plugin package that a release would ship.
+
+## Project website
+
+The website is a dependency-free static site generated from Markdown and the plugin's own manifests, skills, and changelog. Sources live in `website/` (`content/` for docs, `assets/` for styles, fonts, and icons, and `slides/` for the showcase deck); `docs/release-plan.md` is published as the release process page. Its top menu starts with **Slides ↗**, which opens the read-only showcase deck in a new tab.
+
+```sh
+node scripts/website-build.mjs --out _site [--base-url https://example.com/path/]
+node scripts/validate.mjs _site --site
+```
+
+The build refuses to overwrite a non-empty folder and fails on any broken internal link. The **Deploy website** workflow builds and deploys it to GitHub Pages on every relevant push to `main`. The showcase deck is a reviewed build artifact; its outline is `website/deck/showcase.md`.
+
+## Releases
+
+Releases follow [Semantic Versioning](https://semver.org/) and are recorded in [CHANGELOG.md](CHANGELOG.md). See the [release process](docs/release-plan.md) for the gates, channels, and rollback plan.
+
+```sh
+node scripts/release.mjs bump 1.1.0     # update plugin.json and marketplace.json
+node scripts/release.mjs check 1.1.0    # versions, dated changelog section, and tag state
+git tag -a v1.1.0 -m "v1.1.0" && git push origin v1.1.0
+```
+
+Pushing a `v*.*.*` tag runs the **Release** workflow. It re-runs the checks, packages the plugin with `git archive` (see `.gitattributes`), and publishes a GitHub release with `SHA256SUMS` and a build provenance attestation. Report security issues as described in [SECURITY.md](SECURITY.md).
 
 ## References
 

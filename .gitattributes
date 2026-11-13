@@ -1,0 +1,21 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.mp4 binary
+*.woff2 binary
+*.pptx binary
+*.potx binary
+
+# Kept out of the release zip built by `git archive`: the zip carries the plugin
+# runtime, docs, and examples, not the website, demo media, or maintainer tooling.
+.gitattributes export-ignore
+.github/workflows/ export-ignore
+.github/copilot-instructions.md export-ignore
+media/ export-ignore
+site/ export-ignore
+tests/ export-ignore
+website/ export-ignore
+scripts/create-demo.mjs export-ignore
+scripts/release.mjs export-ignore
+scripts/website-build.mjs export-ignore
+scripts/lib/markdown.mjs export-ignore

@@ -5,13 +5,13 @@
   },
   "metadata": {
     "description": "Create PowerPoint-themed bento slides and companion sites.",
-    "version": "0.1.0"
+    "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "bento-deck-studio",
       "description": "Turn PowerPoint themes and content into editable bento slide decks and launch sites.",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "source": "."
     }
   ]

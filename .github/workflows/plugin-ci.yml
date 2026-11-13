@@ -13,11 +13,20 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
       - name: Run unit tests
         run: node --test
       - name: Validate plugin package
         run: node scripts/validate.mjs .
+      - name: Build and validate the website
+        run: |
+          node scripts/website-build.mjs --out "$RUNNER_TEMP/site"
+          node scripts/validate.mjs "$RUNNER_TEMP/site" --site
+      - name: Validate the release package
+        run: |
+          git archive --format=zip --prefix=bento-deck-studio/ -o "$RUNNER_TEMP/plugin.zip" HEAD
+          unzip -q "$RUNNER_TEMP/plugin.zip" -d "$RUNNER_TEMP/unpacked"
+          node scripts/validate.mjs "$RUNNER_TEMP/unpacked/bento-deck-studio"
