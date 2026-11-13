@@ -1,0 +1,59 @@
+1
+00:00:00,000 --> 00:00:03,645
+Start with a PowerPoint theme you already trust.
+
+2
+00:00:03,645 --> 00:00:10,934
+Bento-deck-studio reads its colors, type, slide size, layouts, and candidate image assets without changing the source.
+
+3
+00:00:10,934 --> 00:00:17,312
+Review the extracted theme tokens before you build, and let them shape the story.
+
+4
+00:00:17,662 --> 00:00:21,646
+Next, give Copilot a topic, outline, or Markdown script.
+
+5
+00:00:21,646 --> 00:00:26,959
+The authoring flow turns it into native bento slides, not flattened images.
+
+6
+00:00:26,959 --> 00:00:34,928
+Each slide gets one message, clear hierarchy, and an editable layout you can revise without losing the message.
+
+7
+00:00:35,278 --> 00:00:41,869
+Before writing the file, the deck builder checks Bento's signed release manifest and verifies the shell hash.
+
+8
+00:00:41,869 --> 00:00:47,685
+A supplied image can become the favicon, or the site can generate a theme-colored monogram.
+
+9
+00:00:47,685 --> 00:00:52,726
+The checks run before the deck is written, so release integrity comes first.
+
+10
+00:00:53,076 --> 00:00:58,172
+By default, the result is a simple launch page with the presentation one click away.
+
+11
+00:00:58,172 --> 00:01:01,909
+Choose the full companion site for a menu and story sections.
+
+12
+00:01:01,909 --> 00:01:11,082
+Slides is the first menu item and opens a read-only deck in a new tab, while the deck stays editable and the site remains easy to host.
+
+13
+00:01:11,432 --> 00:01:18,312
+Before sharing, validate the structure, review every slide in a browser, and check links and the favicon.
+
+14
+00:01:18,312 --> 00:01:22,360
+The public deck copy removes speaker notes and collaboration credentials.
+
+15
+00:01:22,360 --> 00:01:29,645
+Your theme, your narrative, and a more considered way to present, ready to share after one final review.

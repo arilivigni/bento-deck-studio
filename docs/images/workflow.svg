@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="title description">
+  <title id="title">bento-deck-studio workflow</title>
+  <desc id="description">A PowerPoint theme and story become an editable bento deck, then a launch site or optional companion website.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#101418"/>
+      <stop offset="1" stop-color="#173b2c"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M1 1l9 5-9 5" fill="none" stroke="#5eec83" stroke-width="2"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="360" rx="28" fill="url(#background)"/>
+  <g font-family="system-ui, sans-serif">
+    <g fill="#172127" stroke="#35434a" stroke-width="2">
+      <rect x="44" y="106" width="244" height="150" rx="20"/>
+      <rect x="360" y="106" width="244" height="150" rx="20"/>
+      <rect x="676" y="106" width="244" height="150" rx="20"/>
+      <rect x="992" y="106" width="164" height="150" rx="20"/>
+    </g>
+    <g fill="none" stroke="#5eec83" stroke-width="3" marker-end="url(#arrow)">
+      <path d="M300 181h48"/>
+      <path d="M616 181h48"/>
+      <path d="M932 181h44"/>
+    </g>
+    <g fill="#5eec83" font-size="14" font-weight="700" letter-spacing="2">
+      <text x="68" y="145">01 · EXTRACT</text>
+      <text x="384" y="145">02 · AUTHOR</text>
+      <text x="700" y="145">03 · BUILD</text>
+      <text x="1016" y="145">04 · SHARE</text>
+    </g>
+    <g fill="#f2f0ea" font-size="22" font-weight="700">
+      <text x="68" y="184">PowerPoint</text>
+      <text x="68" y="214">theme + content</text>
+      <text x="384" y="184">Editable</text>
+      <text x="384" y="214">bento slides</text>
+      <text x="700" y="184">Verified shell</text>
+      <text x="700" y="214">+ favicon</text>
+      <text x="1016" y="184">Launch</text>
+      <text x="1016" y="214">or full site</text>
+    </g>
+    <text x="44" y="310" fill="#aab6bd" font-size="16">Theme tokens guide a fresh narrative; the original PowerPoint stays unchanged.</text>
+  </g>
+</svg>

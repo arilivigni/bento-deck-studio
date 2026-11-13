@@ -1,0 +1,25 @@
+{
+  "source": "sample-theme",
+  "size": {
+    "width": 1280,
+    "height": 720
+  },
+  "theme": {
+    "background": "#101418",
+    "color": "#F2F0EA",
+    "accent": "#5EEC83",
+    "fontFamily": "system-ui, sans-serif"
+  },
+  "fonts": {
+    "heading": "system-ui, sans-serif",
+    "body": "system-ui, sans-serif"
+  },
+  "colors": {
+    "dk1": "#101418",
+    "lt1": "#F2F0EA",
+    "accent1": "#5EEC83"
+  },
+  "layouts": [],
+  "media": [],
+  "logoCandidates": []
+}
